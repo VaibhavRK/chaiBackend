@@ -1,5 +1,5 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import ApiError from "../utils/ApiError.js";
+import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { cloudinaryUpload } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -27,22 +27,24 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(402, "Upload User Image!");
   }
 
-  let coverImagePath = "";
+  let coverImagePath;
 
   if (
     req.files &&
-    Array.isArray(req.files.coverImagePath) &&
-    req.files.coverImagePath.length > 0
+    Array.isArray(req.files.coverImage) &&
+    req.files.coverImage.length > 0
   ) {
-    coverImagePath = req.files.coverImagePath[0];
+    coverImagePath = req.files.coverImage[0].path;
   }
 
   const avatar = await cloudinaryUpload(avatarPath);
   const coverImage = await cloudinaryUpload(coverImagePath);
 
-  if (avatar) {
+  if (!avatar) {
     throw new ApiError(501, "User Image Upload Failed");
   }
+
+  // console.log(req.files);
 
   const user = await User.create({
     username: username.toLowerCase(),

@@ -13,7 +13,8 @@ const cloudinaryUpload = async (localFilePath) => {
     if (!localFilePath) return new Error("Please attach the File first!");
 
     const response = await cloudinary.uploader.upload(localFilePath);
-    console.log("File Uploaded", response);
+    // console.log("File Uploaded", response);
+    fs.unlinkSync(localFilePath);
     return response;
   } catch (error) {
     fs.unlinkSync(localFilePath);
